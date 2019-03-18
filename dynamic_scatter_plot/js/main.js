@@ -18,6 +18,19 @@ var g = d3.select("#chart-area")
 
 var time = 0;
 
+// Tooltip
+var tip = d3.tip().attr('class', 'd3-tip')
+    .html(function(d) {
+        var text = "<strong>Country:</strong> <span style='color:#ff8080'>" + d.country + "</span><br>";
+        text += "<strong>Continent:</strong> <span style='color:#ff8080;text-transform:capitalize'>" + d.continent + "</span><br>";
+        text += "<strong>Life Expectancy:</strong> <span style='color:#ff8080'>" + d3.format(".2f")(d.life_exp) + "</span><br>";
+        text += "<strong>GDP Per Capita:</strong> <span style='color:#ff8080'>" + d3.format("$,.0f")(d.income) + "</span><br>";
+        text += "<strong>Population:</strong> <span style='color:#ff8080'>" + d3.format(",.0f")(d.population) + "</span><br>";
+        return text;
+    });
+g.call(tip);
+
+
 // Scales
 var x = d3.scaleLog()
     .base(10)
@@ -140,6 +153,8 @@ function update(data) {
         .append("circle")
         .attr("class", "enter")
         .attr("fill", function(d) { return continentColor(d.continent); })
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide)
         .merge(circles)
         .transition(t)
             .attr("cy", function(d){ return y(d.life_exp); })
