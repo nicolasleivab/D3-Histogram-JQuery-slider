@@ -69,6 +69,8 @@ g.append("g")
     .attr("class", "y axis")
     .call(yAxisCall); 
 
+// Legend
+
 var continents = ["europe", "asia", "americas", "africa"]; //group continents
 
 var legend = g.append("g")
@@ -94,7 +96,7 @@ continents.forEach(function(continent, i){ //function to append each element fro
 d3.json("data/data.json").then(function(data){
     console.log(data);
 
-    // Clean data
+    // Clean data from null values
     const formattedData = data.map(function(year){
         return year["countries"].filter(function(country){
             var dataExists = (country.income && country.life_exp);
