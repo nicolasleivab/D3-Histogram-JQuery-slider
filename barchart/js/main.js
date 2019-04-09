@@ -22,6 +22,7 @@ g.append("text")
     .attr("x", width / 2)
     .attr("font-size", "20px")
     .attr("text-anchor", "middle") //align
+    .attr("transform", "rotate(-40)")
     .text("Month");
 
 // Y Label
@@ -60,6 +61,7 @@ const MAX = d3.max(data, function(d) { return d.revenue }); // assigning d3.max 
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height +")")
         .call(xAxisCall);
+         
 
     // Y Axis
     var yAxisCall = d3.axisLeft(y)
