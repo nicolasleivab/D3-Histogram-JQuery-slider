@@ -6,12 +6,9 @@ function init() {
                    callback: function(data, tabletop) { 
                        console.log(data)
 
-}
-window.addEventListener('DOMContentLoaded', init)
-        }, 
-        simpleSheet: true } 
 
-init();
+
+
                        
 //** D3 js script **//
  // set the dimensions and margins of the graph
@@ -78,5 +75,8 @@ console.log(data);
             //** end of D3 script **//
 
            
-
+}
+window.addEventListener('DOMContentLoaded', init)
+        }, 
+        simpleSheet: true } 
 
