@@ -21,7 +21,7 @@ function init() {
 
          data.forEach(function(d) {
         d.Rounds = +d.Rounds;
-        d.Playtime = +d.Playtime;
+        d["Playtime (min)"] = +d["Playtime (min)"];
         d.Instructions = +d.Instructions;
         d.Functions = +d.Functions;
         d.Loops = +d.Loops;
