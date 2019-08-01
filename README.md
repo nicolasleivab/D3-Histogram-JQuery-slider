@@ -1,2 +1,6 @@
-# D3-Visualizations-
-These visualizations are for educational purpose only and were part of the projects from the course Mastering data visualization in D3.js in Udemy.
+# D3-Histogram-JQuery-slider
+
+Implementation of a D3.js histogram visualization with double dropdown filter (rows and columns) and JQuery range slider for dates.
+
+
+
