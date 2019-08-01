@@ -35,13 +35,12 @@ g.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x)); //call x axis
 
-});
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
     .value(function(d) { return d['Product A']; })   //Value of the vector
     .domain(x.domain())  //load x domain
-    .thresholds(x.ticks(10)); //Set number of bins
+    .thresholds(x.ticks(20)); //Set number of bins
 
 var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
 
@@ -52,3 +51,15 @@ var y = d3.scaleLinear()
 g.append("g")
     .call(d3.axisLeft(y)); //call y axis
 
+// Append rects to svg element
+g.selectAll("rect")
+    .data(bins)
+    .enter()
+    .append("rect")
+        .attr("x", 1)
+        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+        .attr("width", d => x(d.x1) - x(d.x0))
+        .attr("height", function(d) { return height - y(d.length); })
+        .style("fill", "green");
+
+});
