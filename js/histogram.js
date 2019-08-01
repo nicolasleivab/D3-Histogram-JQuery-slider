@@ -10,3 +10,26 @@ var svg = d3.select("#histogram"),
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+// Load data from csv
+
+d3.tsv("/data/asd.tsv")
+    .then(function(data){
+
+// Format Data
+
+var parseDate = d3.timeParse("%m/%d/%Y");
+
+data.forEach(function(d) {
+    d['Product A'] = +d['Product A'];
+    d['Product B'] = +d['Product B'];
+    d['Product C'] = +d['Product C'];
+    d.Date = parseDate(d.Date);
+});
+
+console.log(data);
+
+});
+
+
+
