@@ -1,3 +1,9 @@
-rect.bar{ 
-fill: green; 
-};
+.bar rect {
+  shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
