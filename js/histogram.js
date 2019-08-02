@@ -10,7 +10,8 @@ var svg = d3.select("#histogram"),
         .append("g")
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var t = d3.transition().duration(500);
+// transition time 
+var t = d3.transition().duration(500);
 
 // Load data from csv
 d3.tsv("/data/data.tsv")
@@ -102,7 +103,8 @@ g.selectAll("rect")
             .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
             .attr("height", function(d) { return height - y(d.length); })
             .style("fill", "green")
-           
+
+// axis update
 d3.select("g.y.axis")  //changing from selectAll to select fixed the conflict between charts
     .transition()
     .call(yCall).selectAll("text").attr("font-size", "12px");
@@ -123,13 +125,53 @@ selector.selectAll("option")
   return d;
 })
 
-xCall = d3.axisBottom(x)
+
+//xcall func
+var xCall = d3.axisBottom(x)
 .tickFormat(function(d){ return d; });
 xApp.transition(t).call(xCall).selectAll("text").attr("font-size", "12px");
 
-yCall = d3.axisLeft(y)
+//ycall func
+var yCall = d3.axisLeft(y)
 .tickFormat(function(d){ return d; });
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
+
+/*Defaul viz*/
+
+// X domain   
+x.domain([0, d3.max(data, function(d) { return d[selection]; })]) // Get max of the selected filter as domain 
+
+// Setting Histogram parameters
+var histogram = d3.histogram()
+    .value(function(d) { return d[selection]; })   //Value of the vector
+    .domain(x.domain())  //load x domain
+    .thresholds(x.ticks(20)); //Set number of bins
+
+var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
+
+// Y domain
+y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
+g.selectAll("rect")
+    .data(bins)
+    .enter()
+    .append("rect")
+    .attr("x", 1)
+        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+        .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
+        .style("fill", "green")
+    .transition(t)
+        .attr("x", 1)
+        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+        .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
+        .attr("height", function(d) { return height - y(d.length); })
+        .style("fill", "green")
+
+d3.select("g.y.axis")  
+    .transition()
+    .call(yCall).selectAll("text").attr("font-size", "12px");
+d3.select("g.x.axis")  
+    .transition()
+    .call(xCall).selectAll("text").attr("font-size", "12px");
 
 }
 });
