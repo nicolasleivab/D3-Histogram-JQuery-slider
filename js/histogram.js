@@ -27,6 +27,10 @@ data.forEach(function(d) {
 
 console.log(data);
 
+allProducts = data.columns.slice(1, -1); // Get Product columns for the filter
+selection = allProducts[0];
+
+
 // X axis and call func
 var x = d3.scaleLinear()
       .domain([0, d3.max(data, function(d) { return d['Product A'] + d['Product A']/10; })]) // Get max of the selected filter as domain
