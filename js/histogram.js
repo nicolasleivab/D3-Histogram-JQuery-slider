@@ -10,6 +10,7 @@ var svg = d3.select("#histogram"),
         .append("g")
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
+        var t = d3.transition().duration(500);
 
 // Load data from csv
 d3.tsv("/data/data.tsv")
@@ -30,6 +31,23 @@ console.log(data);
 allProducts = data.columns.slice(1, -1); // Get Product columns for the filter
 selection = allProducts[0];
 
+// Y axis and call func
+var y = d3.scaleLinear()
+    .range([height, 0]);
+
+// X axis and call func
+var x = d3.scaleLinear()
+    .range([0, width]);
+
+// X axis append
+xApp = g.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height +")");
+
+// Y axis append
+yApp = g.append("g")
+.attr("class", "y axis");
+
 
 // Run the vis for the first time
  update(data);
@@ -41,16 +59,9 @@ function update(data) {
     .attr("id","dropdown")
     .on("change", function(d){
          selection = document.getElementById("dropdown");
-   
 
-// X axis and call func
-var x = d3.scaleLinear()
-      .domain([0, d3.max(data, function(d) { return d[selection.value]; })]) // Get max of the selected filter as domain
-      .range([0, width]);
-g.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x)); //call x axis
-
+// X domain   
+x.domain([0, d3.max(data, function(d) { return d[selection.value]; })]) // Get max of the selected filter as domain 
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
@@ -60,14 +71,8 @@ var histogram = d3.histogram()
 
 var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
 
-// Y axis and call func
-var y = d3.scaleLinear()
-    .range([height, 0]);
-    y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
-g.append("g")
-    .call(d3.axisLeft(y)); //call y axis
-
-    var t = d3.transition().duration(500);
+// Y domain
+y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
 
 // Remove old elements
 g.selectAll("rect")
@@ -97,6 +102,13 @@ g.selectAll("rect")
             .attr("width", d => x(d.x1) - x(d.x0))
             .attr("height", function(d) { return height - y(d.length); })
             .style("fill", "green")
+           
+d3.select("g.y.axis")  //changing from selectAll to select fixed the conflict between charts
+    .transition()
+    .call(yCall).selectAll("text").attr("font-size", "12px");
+d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict between charts
+    .transition()
+    .call(xCall).selectAll("text").attr("font-size", "12px");
 
 });
 
@@ -110,6 +122,14 @@ selector.selectAll("option")
 .text(function(d){
   return d;
 })
-}
 
+xCall = d3.axisBottom(x)
+.tickFormat(function(d){ return d; });
+xApp.transition(t).call(xCall).selectAll("text").attr("font-size", "12px");
+
+yCall = d3.axisLeft(y)
+.tickFormat(function(d){ return d; });
+yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
+
+}
 });
