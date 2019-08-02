@@ -69,7 +69,16 @@ g.append("g")
 
     var t = d3.transition().duration(500);
 
-
+// Remove old elements
+g.selectAll("rect")
+    .data(bins)
+    .exit()
+    .attr("fill", "green")
+    .transition(t)
+    .attr("y", y(0))
+    .attr("height", 0)
+    .remove();
+    
 // Append new rects to svg element
 g.selectAll("rect")
     .data(bins)
