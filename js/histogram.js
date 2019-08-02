@@ -33,8 +33,6 @@ selection = allProducts[0];
 allZones = d3.map(data, function(d){return(d.Zone)}).keys(); //get zones
 selection2= allZones[0];
 
-console.log(data);
-
 // Y axis and call func
 var y = d3.scaleLinear()
     .range([height, 0]);
@@ -54,13 +52,13 @@ yApp = g.append("g")
 
 
 function update(data) {
-  
+    console.log(data);
 // X domain   
-x.domain([0, d3.max(data, function(d) { return d[selection] || d[selection.value] ; })]) // Get max of the selected filter as domain 
+x.domain([0, d3.max(data, function(d) { return d[selection.value] || d[selection] ; })]) // Get max of the selected filter as domain 
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
-    .value(function(d) { return d[selection] || d[selection.value] ; })   //Value of the vector
+    .value(function(d) { return d[selection.value] || d[selection] ; })   //Value of the vector
     .domain(x.domain())  //load x domain
     .thresholds(x.ticks(20)); //Set number of bins
 
@@ -114,17 +112,41 @@ d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict be
 
 }
 
-// Column filter
+
+
+// Filters
+var selector2 = d3.select("#drop2") //dropdown change selection
+.append("select") //append row filter dropdown
+.attr("id","dropdown2")
+.on("change", function(d){ // Row Filter
+    selection2 = document.getElementById("dropdown2");
+    console.log([selection2.value]);
+    update(data.filter(function(d){return d.Zone == [selection2.value];}));
+        selector.on("change", function(d){ // Column Filter
+            selection = document.getElementById("dropdown");
+            console.log([selection.value]);
+            update(data.filter(function(d){return d.Zone == [selection2.value];}));
+             });
+      });
+
+      
+//get values for the row filter dropdown
+selector2.selectAll("option")
+.data(allZones)
+.enter().append("option")
+.attr("value", function(d){
+  return d;
+})
+.text(function(d){
+  return d;
+})
+
+// append column filter dropdown
 var selector = d3.select("#drop") //dropdown change selection
 .append("select")
-.attr("id","dropdown")
-.on("change", function(d){
-     selection = document.getElementById("dropdown");
-     console.log([selection.value]);
+.attr("id","dropdown");
 
-        update(data.filter(function(d){return d.Zone == [selection2] || [selection2.value];}));
-      });
-//get values for the dropdown
+//get values for the column filter dropdown
 selector.selectAll("option")
 .data(allProducts)
 .enter().append("option")
@@ -134,7 +156,6 @@ selector.selectAll("option")
 .text(function(d){
   return d;
 })
-
 
 //xcall func
 var xCall = d3.axisBottom(x)
@@ -146,5 +167,7 @@ var yCall = d3.axisLeft(y)
 .tickFormat(function(d){ return d; });
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 
+// Render first viz
 update(data.filter(function(d){return d.Zone == [selection2];}));
+
 });
