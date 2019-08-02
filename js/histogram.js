@@ -144,7 +144,12 @@ selector2.selectAll("option")
 // append column filter dropdown
 var selector = d3.select("#drop") //dropdown change selection
 .append("select")
-.attr("id","dropdown");
+.attr("id","dropdown")
+.on("change", function(d){ //default run for column filter
+    selection = document.getElementById("dropdown");
+    console.log([selection.value]);
+    update(data.filter(function(d){return d.Zone == [selection2];}));
+     });
 
 //get values for the column filter dropdown
 selector.selectAll("option")
