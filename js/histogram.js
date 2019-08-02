@@ -31,9 +31,21 @@ allProducts = data.columns.slice(1, -1); // Get Product columns for the filter
 selection = allProducts[0];
 
 
+// Run the vis for the first time
+ update(data);
+    
+function update(data) {
+
+    var selector = d3.select("#drop") //dropdown change selection
+    .append("select")
+    .attr("id","dropdown")
+    .on("change", function(d){
+         selection = document.getElementById("dropdown");
+   
+
 // X axis and call func
 var x = d3.scaleLinear()
-      .domain([0, d3.max(data, function(d) { return d['Product A'] + d['Product A']/10; })]) // Get max of the selected filter as domain
+      .domain([0, d3.max(data, function(d) { return d[selection.value]; })]) // Get max of the selected filter as domain
       .range([0, width]);
 g.append("g")
     .attr("transform", "translate(0," + height + ")")
@@ -42,7 +54,7 @@ g.append("g")
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
-    .value(function(d) { return d['Product A']; })   //Value of the vector
+    .value(function(d) { return d[selection.value]; })   //Value of the vector
     .domain(x.domain())  //load x domain
     .thresholds(x.ticks(20)); //Set number of bins
 
@@ -55,7 +67,10 @@ var y = d3.scaleLinear()
 g.append("g")
     .call(d3.axisLeft(y)); //call y axis
 
-// Append rects to svg element
+    var t = d3.transition().duration(500);
+
+
+// Append new rects to svg element
 g.selectAll("rect")
     .data(bins)
     .enter()
@@ -64,6 +79,28 @@ g.selectAll("rect")
         .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
         .attr("width", d => x(d.x1) - x(d.x0))
         .attr("height", function(d) { return height - y(d.length); })
-        .style("fill", "green");
+        .style("fill", "green")
+        .merge(g.selectAll("rect") // Update old elements
+        .data(bins))
+            .transition(t)
+            .attr("x", 1)
+            .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+            .attr("width", d => x(d.x1) - x(d.x0))
+            .attr("height", function(d) { return height - y(d.length); })
+            .style("fill", "green")
+
+});
+
+//get values for the dropdown
+selector.selectAll("option")
+.data(allProducts)
+.enter().append("option")
+.attr("value", function(d){
+  return d;
+})
+.text(function(d){
+  return d;
+})
+}
 
 });
