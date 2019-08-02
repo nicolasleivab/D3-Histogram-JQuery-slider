@@ -27,10 +27,13 @@ data.forEach(function(d) {
     d.Date = parseDate(d.Date);
 });
 
-console.log(data);
-
-allProducts = data.columns.slice(1, -1); // Get Product columns for the filter
+// Filter values
+allProducts = data.columns.slice(1, -1); //get Product columns for the filter
 selection = allProducts[0];
+allZones = d3.map(data, function(d){return(d.Zone)}).keys(); //get zones
+selection2= allZones[0];
+
+console.log(data);
 
 // Y axis and call func
 var y = d3.scaleLinear()
@@ -50,23 +53,14 @@ yApp = g.append("g")
 .attr("class", "y axis");
 
 
-// Run the vis for the first time
- update(data);
-    
 function update(data) {
-
-    var selector = d3.select("#drop") //dropdown change selection
-    .append("select")
-    .attr("id","dropdown")
-    .on("change", function(d){
-         selection = document.getElementById("dropdown");
-
+  
 // X domain   
-x.domain([0, d3.max(data, function(d) { return d[selection.value]; })]) // Get max of the selected filter as domain 
+x.domain([0, d3.max(data, function(d) { return d[selection] || d[selection.value] ; })]) // Get max of the selected filter as domain 
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
-    .value(function(d) { return d[selection.value]; })   //Value of the vector
+    .value(function(d) { return d[selection] || d[selection.value] ; })   //Value of the vector
     .domain(x.domain())  //load x domain
     .thresholds(x.ticks(20)); //Set number of bins
 
@@ -75,12 +69,19 @@ var bins = histogram(data); //Apply d3.histogram function with array data as inp
 // Y domain
 y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
 
+//Joins
+g.selectAll("rect")
+    .data(bins, function(d){
+        return d.level;
+        });
+
 // Remove old elements
 g.selectAll("rect")
     .data(bins)
     .exit()
     .attr("fill", "green")
     .transition(t)
+    .attr("x", x(0))
     .attr("y", y(0))
     .attr("height", 0)
     .remove();
@@ -93,7 +94,6 @@ g.selectAll("rect")
         .attr("x", 1)
         .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
         .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
-        .attr("height", function(d) { return height - y(d.length); })
         .style("fill", "green")
         .merge(g.selectAll("rect") // Update old elements
         .data(bins))
@@ -112,8 +112,18 @@ d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict be
     .transition()
     .call(xCall).selectAll("text").attr("font-size", "12px");
 
-});
+}
 
+// Column filter
+var selector = d3.select("#drop") //dropdown change selection
+.append("select")
+.attr("id","dropdown")
+.on("change", function(d){
+     selection = document.getElementById("dropdown");
+     console.log([selection.value]);
+
+        update(data.filter(function(d){return d.Zone == [selection2] || [selection2.value];}));
+      });
 //get values for the dropdown
 selector.selectAll("option")
 .data(allProducts)
@@ -136,42 +146,5 @@ var yCall = d3.axisLeft(y)
 .tickFormat(function(d){ return d; });
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 
-/*Defaul viz*/
-
-// X domain   
-x.domain([0, d3.max(data, function(d) { return d[selection]; })]) // Get max of the selected filter as domain 
-
-// Setting Histogram parameters
-var histogram = d3.histogram()
-    .value(function(d) { return d[selection]; })   //Value of the vector
-    .domain(x.domain())  //load x domain
-    .thresholds(x.ticks(20)); //Set number of bins
-
-var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
-
-// Y domain
-y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
-g.selectAll("rect")
-    .data(bins)
-    .enter()
-    .append("rect")
-    .attr("x", 1)
-        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-        .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
-        .style("fill", "green")
-    .transition(t)
-        .attr("x", 1)
-        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-        .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
-        .attr("height", function(d) { return height - y(d.length); })
-        .style("fill", "green")
-
-d3.select("g.y.axis")  
-    .transition()
-    .call(yCall).selectAll("text").attr("font-size", "12px");
-d3.select("g.x.axis")  
-    .transition()
-    .call(xCall).selectAll("text").attr("font-size", "12px");
-
-}
+update(data.filter(function(d){return d.Zone == [selection2];}));
 });
