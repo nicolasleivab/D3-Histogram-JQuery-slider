@@ -16,7 +16,7 @@ var t = d3.transition().duration(500);
 // Load data from tsv
 d3.tsv("/data/data.tsv")
     .then(function(data){
-console.log(data);
+
 // Format Data
 var parseDate = d3.timeParse("%Y");
 
@@ -54,8 +54,8 @@ yApp = g.append("g")
 function update(data) {
     console.log(data);
 // X domain   
-x.domain([d3.min(data, function(d) { return d[selection.value] || d[selection]; }), d3.max(data, function(d) { return d[selection.value] || d[selection] ; })]); 
-
+x.domain([(d3.min(data, function(d) { return d[selection.value] || d[selection]; })) - 2, (d3.max(data, function(d) { return d[selection.value] || d[selection] ; })) + 2]); 
+    
 // Setting Histogram parameters
 var histogram = d3.histogram()
     .value(function(d) { return d[selection.value] || d[selection] ; })   //Value of the vector
