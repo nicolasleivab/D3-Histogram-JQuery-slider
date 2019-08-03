@@ -13,25 +13,25 @@ var svg = d3.select("#histogram"),
 // transition time 
 var t = d3.transition().duration(500);
 
-// Load data from csv
+// Load data from tsv
 d3.tsv("/data/data.tsv")
     .then(function(data){
-
+console.log(data);
 // Format Data
-var parseDate = d3.timeParse("%m/%d/%Y");
+var parseDate = d3.timeParse("%Y");
 
 data.forEach(function(d) {
-    d['Product A'] = +d['Product A'];
-    d['Product B'] = +d['Product B'];
-    d['Product C'] = +d['Product C'];
-    d.Date = parseDate(d.Date);
+    d['Mean height (cm)'] = +d['Mean height (cm)'];
+    d['Mean height lower 95% uncertainty interval (cm)'] = +d['Mean height lower 95% uncertainty interval (cm)'];
+    d['Mean height upper 95% uncertainty interval (cm)'] = +d['Mean height upper 95% uncertainty interval (cm)'];
+    d['Year of birth'] = parseDate(d['Year of birth']);
 });
 
 // Filter values
-allProducts = data.columns.slice(1, -1); //get Product columns for the filter
-selection = allProducts[0];
-allZones = d3.map(data, function(d){return(d.Zone)}).keys(); //get zones
-selection2= allZones[0];
+allStats = data.columns.slice(2); //get Product columns for the filter
+selection = allStats[0];
+allSexs = d3.map(data, function(d){return(d.Sex)}).keys(); //get zones
+selection2= allSexs[0];
 
 // Y axis and call func
 var y = d3.scaleLinear()
@@ -54,24 +54,20 @@ yApp = g.append("g")
 function update(data) {
     console.log(data);
 // X domain   
-x.domain([0, d3.max(data, function(d) { return d[selection.value] || d[selection] ; })]) // Get max of the selected filter as domain 
+x.domain([d3.min(data, function(d) { return d[selection.value] || d[selection]; }), d3.max(data, function(d) { return d[selection.value] || d[selection] ; })]); 
 
 // Setting Histogram parameters
 var histogram = d3.histogram()
     .value(function(d) { return d[selection.value] || d[selection] ; })   //Value of the vector
     .domain(x.domain())  //load x domain
-    .thresholds(x.ticks(20)); //Set number of bins
+    .thresholds(x.ticks(40)); //Set number of bins
 
 var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
 
 // Y domain
 y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
 
-//Joins
-g.selectAll("rect")
-    .data(bins, function(d){
-        return d.level;
-        });
+
 
 // Remove old elements
 g.selectAll("rect")
@@ -79,9 +75,8 @@ g.selectAll("rect")
     .exit()
     .attr("fill", "green")
     .transition(t)
-    .attr("x", x(0))
-    .attr("y", y(0))
     .attr("height", 0)
+    .attr("width", 0)
     .remove();
     
 // Append new rects to svg element
@@ -115,24 +110,24 @@ d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict be
 
 
 // Filters
-var selector2 = d3.select("#drop2") //dropdown change selection
+var sexSelector = d3.select("#drop2") //dropdown change selection
 .append("select") //append row filter dropdown
 .attr("id","dropdown2")
 .on("change", function(d){ // Row Filter
     selection2 = document.getElementById("dropdown2");
     console.log([selection2.value]);
-    update(data.filter(function(d){return d.Zone == [selection2.value];}));
-        selector.on("change", function(d){ // Column Filter
+    update(data.filter(function(d){return d.Sex == [selection2.value];}));
+        statSelector.on("change", function(d){ // Column Filter
             selection = document.getElementById("dropdown");
             console.log([selection.value]);
-            update(data.filter(function(d){return d.Zone == [selection2.value];}));
+            update(data.filter(function(d){return d.Sex == [selection2.value];}));
              });
       });
 
       
 //get values for the row filter dropdown
-selector2.selectAll("option")
-.data(allZones)
+sexSelector.selectAll("option")
+.data(allSexs)
 .enter().append("option")
 .attr("value", function(d){
   return d;
@@ -142,18 +137,18 @@ selector2.selectAll("option")
 })
 
 // append column filter dropdown
-var selector = d3.select("#drop") //dropdown change selection
+var statSelector = d3.select("#drop") //dropdown change selection
 .append("select")
 .attr("id","dropdown")
 .on("change", function(d){ //default run for column filter
     selection = document.getElementById("dropdown");
     console.log([selection.value]);
-    update(data.filter(function(d){return d.Zone == [selection2];}));
+    update(data.filter(function(d){return d.Sex == [selection2];}));
      });
 
 //get values for the column filter dropdown
-selector.selectAll("option")
-.data(allProducts)
+statSelector.selectAll("option")
+.data(allStats)
 .enter().append("option")
 .attr("value", function(d){
   return d;
@@ -173,6 +168,6 @@ var yCall = d3.axisLeft(y)
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 
 // Render first viz
-update(data.filter(function(d){return d.Zone == [selection2];}));
+update(data.filter(function(d){return d.Sex == [selection2];}));
 
 });
