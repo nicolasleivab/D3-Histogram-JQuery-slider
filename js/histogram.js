@@ -18,13 +18,11 @@ d3.tsv("/data/data.tsv")
     .then(function(data){
 
 // Format Data
-var parseDate = d3.timeParse("%Y");
-
 data.forEach(function(d) {
     d['Mean height (cm)'] = +d['Mean height (cm)'];
     d['Mean height lower 95% uncertainty interval (cm)'] = +d['Mean height lower 95% uncertainty interval (cm)'];
     d['Mean height upper 95% uncertainty interval (cm)'] = +d['Mean height upper 95% uncertainty interval (cm)'];
-    d['Year of birth'] = parseDate(d['Year of birth']);
+    d['Year of birth'] = +d['Year of birth'];
 });
 
 // Filter values
@@ -52,7 +50,7 @@ yApp = g.append("g")
 
 
 function update(data) {
-    console.log(data);
+    
 // X domain   
 x.domain([(d3.min(data, function(d) { return d[selection.value] || d[selection]; })) - 2, (d3.max(data, function(d) { return d[selection.value] || d[selection] ; })) + 2]); 
     
@@ -66,8 +64,6 @@ var bins = histogram(data); //Apply d3.histogram function with array data as inp
 
 // Y domain
 y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
-
-
 
 // Remove old elements
 g.selectAll("rect")
@@ -107,6 +103,21 @@ d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict be
 
 }
 
+//jQuery UI slider
+$("#yearSlider").slider({
+    range: true,
+    max: 1996,
+    min: 1896,
+    step: 1, // One year
+    values: [ 1896, 1996 ],
+    slide: function(event, ui){
+        $("#dateLabel1").text((ui.values[0]));
+        $("#dateLabel2").text((ui.values[1]));
+        update(data.filter(function(d){return ((d['Year of birth'] >= ui.values[0]) && (d['Year of birth'] <= ui.values[1]));}));
+        console.log(ui.values[0]);
+        console.log(data);
+    }
+});
 
 
 // Filters
@@ -169,5 +180,6 @@ yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 
 // Render first viz
 update(data.filter(function(d){return d.Sex == [selection2];}));
+
 
 });
