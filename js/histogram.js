@@ -119,6 +119,14 @@ $("#yearSlider").slider({
     }
 });
 
+//Reset slider func
+function resetSlider() {
+    var $slider = $("#yearSlider");
+    $slider.slider("values", 0, 1896);
+    $slider.slider("values", 1, 1996);
+    $("#dateLabel1").text(1896);
+    $("#dateLabel2").text(1996);
+  }
 
 // Filters
 var sexSelector = d3.select("#drop2") //dropdown change selection
@@ -128,10 +136,12 @@ var sexSelector = d3.select("#drop2") //dropdown change selection
     selection2 = document.getElementById("dropdown2");
     console.log([selection2.value]);
     update(data.filter(function(d){return d.Sex == [selection2.value];}));
+    resetSlider();
         statSelector.on("change", function(d){ // Column Filter
             selection = document.getElementById("dropdown");
             console.log([selection.value]);
             update(data.filter(function(d){return d.Sex == [selection2.value];}));
+            resetSlider();
              });
       });
 
@@ -155,6 +165,7 @@ var statSelector = d3.select("#drop") //dropdown change selection
     selection = document.getElementById("dropdown");
     console.log([selection.value]);
     update(data.filter(function(d){return d.Sex == [selection2];}));
+    resetSlider();
      });
 
 //get values for the column filter dropdown
