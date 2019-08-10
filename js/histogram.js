@@ -113,7 +113,7 @@ $("#yearSlider").slider({
     slide: function(event, ui){
         $("#dateLabel1").text((ui.values[0]));
         $("#dateLabel2").text((ui.values[1]));
-        update(data.filter(function(d){return ((d['Year of birth'] >= ui.values[0]) && (d['Year of birth'] <= ui.values[1]));}));
+        update(data.filter(function(d){return ((d['Year of birth'] >= ui.values[0]) && (d['Year of birth'] <= ui.values[1]) && (d.Sex == [selection2.value] || d.Sex == [selection2]));}));
         console.log(ui.values[0]);
         console.log(data);
     }
@@ -121,9 +121,8 @@ $("#yearSlider").slider({
 
 //Reset slider func
 function resetSlider() {
-    var $slider = $("#yearSlider");
-    $slider.slider("values", 0, 1896);
-    $slider.slider("values", 1, 1996);
+    $("#yearSlider").slider("values", 0, 1896);
+    $("#yearSlider").slider("values", 1, 1996);
     $("#dateLabel1").text(1896);
     $("#dateLabel2").text(1996);
   }
