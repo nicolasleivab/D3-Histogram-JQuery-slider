@@ -31,11 +31,11 @@ selection = allStats[0];
 allSexs = d3.map(data, function(d){return(d.Sex)}).keys(); //get zones
 selection2= allSexs[0];
 
-// Y axis and call func
+// Y axis 
 var y = d3.scaleLinear()
     .range([height, 0]);
 
-// X axis and call func
+// X axis 
 var x = d3.scaleLinear()
     .range([0, width]);
 
@@ -178,12 +178,12 @@ statSelector.selectAll("option")
   return d;
 })
 
-//xcall func
+//X axis call func
 var xCall = d3.axisBottom(x)
 .tickFormat(function(d){ return d; });
 xApp.transition(t).call(xCall).selectAll("text").attr("font-size", "12px");
 
-//ycall func
+//Y axis call func
 var yCall = d3.axisLeft(y)
 .tickFormat(function(d){ return d; });
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
