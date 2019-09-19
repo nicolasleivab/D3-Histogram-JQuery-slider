@@ -191,5 +191,15 @@ yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 // Render first viz
 update(data.filter(function(d){return d.Sex == [selection2];}));
 
+/*
+//could be implemented to have customized classes
+function update(numOfBins) {
+var histogram = d3.histogram()
+.value(function(d) { return d.value; })//value of the vector
+.domain(x.domain())
+.thresholds(x.ticks(numOfBins)); //number of bins
+//exit and enter rect function and attributes...
+}
+*/
 
 });
