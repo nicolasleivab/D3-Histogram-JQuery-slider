@@ -1,7 +1,7 @@
 /* D3 Histogram */
 
 // Set dimensions and append svg to div #histogram
-var svg = d3.select("#histogram"),
+const svg = d3.select("#histogram"),
     margin = {top: 20, right: 120, bottom: 100, left: 100},
     width = 1200 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom,
@@ -11,7 +11,7 @@ var svg = d3.select("#histogram"),
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
 // transition time 
-var t = d3.transition().duration(500);
+const t = d3.transition().duration(500);
 
 // Load data from tsv
 d3.tsv("/data/data.tsv")
@@ -32,11 +32,11 @@ allSexs = d3.map(data, function(d){return(d.Sex)}).keys(); //get zones
 selection2= allSexs[0];
 
 // Y axis 
-var y = d3.scaleLinear()
+const y = d3.scaleLinear()
     .range([height, 0]);
 
 // X axis 
-var x = d3.scaleLinear()
+const x = d3.scaleLinear()
     .range([0, width]);
 
 // X axis append
@@ -55,12 +55,12 @@ function update(data) {
 x.domain([(d3.min(data, function(d) { return d[selection.value] || d[selection]; })) - 2, (d3.max(data, function(d) { return d[selection.value] || d[selection] ; })) + 2]); 
     
 // Setting Histogram parameters
-var histogram = d3.histogram()
+let histogram = d3.histogram()
     .value(function(d) { return d[selection.value] || d[selection] ; })   //Value of the vector
     .domain(x.domain())  //load x domain
     .thresholds(x.ticks(40)); //Set number of bins
 
-var bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
+const bins = histogram(data); //Apply d3.histogram function with array data as input and creat a binding 'bins'
 
 // Y domain
 y.domain([0, d3.max(bins, function(d) { return d.length; })]);   //return length of selected value in hist func
@@ -95,10 +95,10 @@ g.selectAll("rect")
 
 // axis update
 d3.select("g.y.axis")  //changing from selectAll to select fixed the conflict between charts
-    .transition()
+    .transition(t)
     .call(yCall).selectAll("text").attr("font-size", "12px");
 d3.select("g.x.axis")  //changing from selectAll to select fixed the conflict between charts
-    .transition()
+    .transition(t)
     .call(xCall).selectAll("text").attr("font-size", "12px");
 
 }
@@ -128,7 +128,7 @@ function resetSlider() {
   }
 
 // Filters
-var sexSelector = d3.select("#drop2") //dropdown change selection
+const sexSelector = d3.select("#drop2") //dropdown change selection
 .append("select") //append row filter dropdown
 .attr("id","dropdown2")
 .on("change", function(d){ // Row Filter
@@ -157,7 +157,7 @@ sexSelector.selectAll("option")
 })
 
 // append column filter dropdown
-var statSelector = d3.select("#drop") //dropdown change selection
+const statSelector = d3.select("#drop") //dropdown change selection
 .append("select")
 .attr("id","dropdown")
 .on("change", function(d){ //default run for column filter
@@ -179,12 +179,12 @@ statSelector.selectAll("option")
 })
 
 //X axis call func
-var xCall = d3.axisBottom(x)
+const xCall = d3.axisBottom(x)
 .tickFormat(function(d){ return d; });
 xApp.transition(t).call(xCall).selectAll("text").attr("font-size", "12px");
 
 //Y axis call func
-var yCall = d3.axisLeft(y)
+const yCall = d3.axisLeft(y)
 .tickFormat(function(d){ return d; });
 yApp.transition(t).call(yCall).selectAll("text").attr("font-size", "12px");
 
@@ -194,7 +194,7 @@ update(data.filter(function(d){return d.Sex == [selection2];}));
 /*
 //could be implemented to have customized classes
 function update(numOfBins) {
-var histogram = d3.histogram()
+let histogram = d3.histogram()
 .value(function(d) { return d.value; })//value of the vector
 .domain(x.domain())
 .thresholds(x.ticks(numOfBins)); //number of bins

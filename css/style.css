@@ -1,3 +1,9 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .bar rect {
   shape-rendering: crispEdges;
 }
@@ -11,4 +17,9 @@
 #yearSlider {
     width: 45%;
 }
+
+body {
+  padding-top: 50px;
+}
+ 
 
